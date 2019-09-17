@@ -23,6 +23,12 @@ def move(choice,position):
         return position
     return position
 
+def check_valid_direction(choice):
+    if choice == "n" or choice == "N" or choice == "s" or choice == "S" or choice == "w" or choice == "W" or choice == "e" or choice == "E" :
+        return True 
+    else:
+        return False     
+
 def get_choice():
     choice = input('Direction: ')
     return choice
@@ -57,8 +63,13 @@ if position == [3,3]:
     west = True
     south = True
 
-while position != [3,1] and choice != "q":
+while position != [3,1]:
     choice = get_choice()
-    position = move(choice, position)
+    if choice == 'q':
+        break
+    elif check_valid_direction(choice):
+        position = move(choice, position)
+    else: 
+        print('Not a valid direction!')
     #print(position)
 
