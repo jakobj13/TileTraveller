@@ -108,6 +108,17 @@ while not victory:
     victory, col, row = play_one_move(col, row, valid_directions)
     if victory:
         print("Victory! Total coins ", coins, ".", sep = '')
+        play_again = input("Play again (y/n): ")
+        if play_again == 'y' or play_again == 'Y':
+            victory = False
+            lever = False
+            row = 1
+            col = 1
+            coins = 0
+
+            valid_directions = NORTH
+            print_directions_and_coins(valid_directions, col, row, coins)
+
     else:
         valid_directions = find_directions(col, row)
         coins = print_directions_and_coins(valid_directions, col, row, coins)
