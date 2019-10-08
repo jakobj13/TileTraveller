@@ -19,7 +19,16 @@ def is_victory(col, row):
     ''' Return true is player is in the victory cell '''
     return col == 3 and row == 1 # (3,1)
 
-def print_directions(directions_str):
+def print_directions_and_coins(directions_str, col, row, coins):
+    ''' Prints the directions, and checks the col, row for lever. If lever, add to coins and return coins. '''
+    lever = False
+    lever = check_lever(col,row)
+    inp = ""
+    if lever:
+        inp = input("Pull a lever (y/n): ")
+        if inp == 'y' or inp == 'Y':
+            coins += 1
+            print("You received 1 coin, your total is now ", coins, ".", sep ='')
     print("You can travel: ", end='')
     first = True
     for ch in directions_str:
@@ -35,6 +44,7 @@ def print_directions(directions_str):
             print("(W)est", end='')
         first = False
     print(".")
+    return coins
         
 def find_directions(col, row):
     ''' Returns valid directions as a string given the supplied location '''
@@ -56,6 +66,20 @@ def find_directions(col, row):
         valid_directions = SOUTH+WEST
     return valid_directions
 
+def check_lever(col, row):
+    ''' Returns true if lever is on the col, and row'''
+    lever = False
+    if col == 1 and row == 2: # (1,2)
+        lever = True
+    elif col == 2 and row == 2: # (2,2)
+        lever = True
+    elif col == 2 and row == 3: # (2,3)
+        lever = True
+    elif col == 3 and row == 2: # (3,2)
+        lever = True
+    return lever
+
+
 def play_one_move(col, row, valid_directions):
     ''' Plays one move of the game
         Return if victory has been obtained and updated col,row '''
@@ -72,16 +96,18 @@ def play_one_move(col, row, valid_directions):
 
 # The main program starts here
 victory = False
+lever = False
 row = 1
 col = 1
+coins = 0
 
 valid_directions = NORTH
-print_directions(valid_directions)
+print_directions_and_coins(valid_directions, col, row, coins)
 
 while not victory:
     victory, col, row = play_one_move(col, row, valid_directions)
     if victory:
-        print("Victory!")
+        print("Victory! Total coins ", coins, ".", sep = '')
     else:
         valid_directions = find_directions(col, row)
-        print_directions(valid_directions)
+        coins = print_directions_and_coins(valid_directions, col, row, coins)
