@@ -1,114 +1,87 @@
-"""
-First check position. Identify open walls in the position and print out the options for the player.
-When player moves, check position again and print options. If invalid direction is entered allow the
-player to choose again. End game when victory location is reached
-"""
+NORTH = 'n'
+EAST = 'e'
+SOUTH = 's'
+WEST = 'w'
 
-#Repo -- https://github.com/jakobj13/TileTraveller
-north = False
-south = False
-west = False
-east = False
-position = [1,1]
-choice = "n"
-bad_choice_counter = 0
+def move(direction, col, row):
+    ''' Returns updated col, row given the direction '''
+    if direction == NORTH:
+        row += 1
+    elif direction == SOUTH:
+        row -= 1
+    elif direction == EAST:
+        col += 1
+    elif direction == WEST:
+        col -= 1
+    return(col, row)    
 
-def move(choice,position):
-    if choice == 'n' or choice == 'N':
-        position[1] = position[1] + 1
-    elif choice == 's' or choice == 'S':
-        position[1] = position[1] - 1
-    elif choice == 'w' or choice =='W':
-        position[0] = position[0] - 1
-    elif choice == 'e' or choice == 'E':
-        position[0] = position[0] + 1
+def is_victory(col, row):
+    ''' Return true is player is in the victory cell '''
+    return col == 3 and row == 1 # (3,1)
+
+def print_directions(directions_str):
+    print("You can travel: ", end='')
+    first = True
+    for ch in directions_str:
+        if not first:
+            print(" or ", end='')
+        if ch == NORTH:
+            print("(N)orth", end='')
+        elif ch == EAST:
+            print("(E)ast", end='')
+        elif ch == SOUTH:
+            print("(S)outh", end='')
+        elif ch == WEST:
+            print("(W)est", end='')
+        first = False
+    print(".")
+        
+def find_directions(col, row):
+    ''' Returns valid directions as a string given the supplied location '''
+    if col == 1 and row == 1:   # (1,1)
+        valid_directions = NORTH
+    elif col == 1 and row == 2: # (1,2)
+        valid_directions = NORTH+EAST+SOUTH
+    elif col == 1 and row == 3: # (1,3)
+        valid_directions = EAST+SOUTH
+    elif col == 2 and row == 1: # (2,1)
+        valid_directions = NORTH
+    elif col == 2 and row == 2: # (2,2)
+        valid_directions = SOUTH+WEST
+    elif col == 2 and row == 3: # (2,3)
+        valid_directions = EAST+WEST
+    elif col == 3 and row == 2: # (3,2)
+        valid_directions = NORTH+SOUTH
+    elif col == 3 and row == 3: # (3,3)
+        valid_directions = SOUTH+WEST
+    return valid_directions
+
+def play_one_move(col, row, valid_directions):
+    ''' Plays one move of the game
+        Return if victory has been obtained and updated col,row '''
+    victory = False
+    direction = input("Direction: ")
+    direction = direction.lower()
+    
+    if not direction in valid_directions:
+        print("Not a valid direction!")
     else:
-        return position
-    return position
+        col, row = move(direction, col, row)
+        victory = is_victory(col, row)
+    return victory, col, row
 
-def check_valid_direction(choice):
-    if choice == "n" or choice == "N":
-        if north:
-            return True
-    elif choice == "s" or choice == "S":
-        if south:
-            return True
-    elif choice == "w" or choice == "W":
-        if west:
-            return True
-    elif choice == "e" or choice == "E":
-        if east:
-            return True
+# The main program starts here
+victory = False
+row = 1
+col = 1
+
+valid_directions = NORTH
+print_directions(valid_directions)
+
+while not victory:
+    victory, col, row = play_one_move(col, row, valid_directions)
+    if victory:
+        print("Victory!")
     else:
-        return False     
-
-def get_choice():
-    choice = input('Direction: ')
-    return choice
-
-while position != [3,1]:
-    if position == [1,1] and bad_choice_counter == 0:
-        north = True
-        south = False
-        east = False
-        west = False
-        print("You can travel: (N)orth.")
-    if position == [1,2] and bad_choice_counter == 0:
-        south = True
-        east = True
-        north = True
-        west = False
-        print("You can travel: (N)orth or (E)ast or (S)outh.")
-    if position == [1,3] and bad_choice_counter == 0:
-        north = False
-        west = False
-        south = True
-        east = True
-        print("You can travel: (E)ast or (S)outh.")
-    if position == [2,1] and bad_choice_counter == 0:
-        north = True
-        west = False
-        east = False
-        south = False
-        print("You can travel: (N)orth.")
-    if position == [2,2] and bad_choice_counter == 0:
-        north = False
-        east = False
-        south = True
-        west = True
-        print("You can travel: (S)outh or (W)est.")
-    if position == [2,3] and bad_choice_counter == 0:
-        north = False
-        south = False
-        east = True
-        west = True
-        print("You can travel: (E)ast or (W)est.")
-    if position == [3,1] and bad_choice_counter == 0:
-        north = True
-        south = False
-        west = False
-        east = False
-    if position == [3,2] and bad_choice_counter == 0:
-        north = True
-        east = False
-        west = False
-        south = True
-        print("You can travel: (N)orth or (S)outh.")
-    if position == [3,3] and bad_choice_counter == 0:
-        north = False
-        east = False
-        west = True
-        south = True
-        print("You can travel: (S)outh or (W)est.")
-    choice = get_choice()
-    if choice == 'q':
-        break
-    elif check_valid_direction(choice):
-        bad_choice_counter = 0
-        position = move(choice, position)
-    else: 
-        print('Not a valid direction!')
-        bad_choice_counter += 1
-if position == [3,1]:
-    print("Victory!")
-
+        valid_directions = find_directions(col, row)
+        print_directions(valid_directions)
